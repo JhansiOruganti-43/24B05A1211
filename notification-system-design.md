@@ -295,3 +295,85 @@ To support future growth:
 # Conclusion
 
 The proposed PostgreSQL schema is simple, normalized, scalable, and optimized for fast retrieval of notifications while supporting future growth and high user traffic.
+
+# Stage 3
+
+## Given Query
+
+```sql
+SELECT *
+FROM notifications
+WHERE studentID = 1042
+AND isRead = FALSE
+ORDER BY createdAt ASC;
+```
+
+## Is the query accurate?
+
+Yes. It correctly retrieves all unread notifications for student **1042** and sorts them by creation time.
+
+---
+
+## Why is this query slow?
+
+* `SELECT *` retrieves all columns even when they are not required.
+* If there is no index on `studentID`, `isRead`, and `createdAt`, the database performs a full table scan.
+* Sorting a large number of records by `createdAt` increases execution time.
+
+---
+
+## How would you improve it?
+
+I would fetch only the required columns and create a composite index on `studentID`, `isRead`, and `createdAt`.
+
+```sql
+SELECT notificationID,
+       studentID,
+       notificationType,
+       message,
+       createdAt
+FROM notifications
+WHERE studentID = 1042
+AND isRead = FALSE
+ORDER BY createdAt ASC;
+```
+
+### Recommended Index
+
+```sql
+CREATE INDEX idx_student_read_created
+ON notifications(studentID, isRead, createdAt);
+```
+
+This index helps the database filter and sort the data more efficiently.
+
+---
+
+## Should we create indexes on every column?
+
+No.
+
+Creating indexes on every column is not recommended because:
+
+* It increases storage usage.
+* INSERT, UPDATE, and DELETE operations become slower.
+* Many indexes may never be used.
+
+Indexes should only be created on columns that are frequently used in filtering, searching, joining, or sorting.
+
+---
+
+## Query to find students who received Placement notifications in the last 7 days
+
+```sql
+SELECT DISTINCT studentID
+FROM notifications
+WHERE notificationType = 'Placement'
+AND createdAt >= CURRENT_DATE - INTERVAL '7 days';
+```
+
+---
+
+## Conclusion
+
+Using a composite index, selecting only required columns, and avoiding unnecessary indexes improves query performance and makes the notification system more scalable.
