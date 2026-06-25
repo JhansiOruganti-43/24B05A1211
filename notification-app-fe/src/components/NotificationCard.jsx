@@ -1,0 +1,25 @@
+import { Card, CardContent, Chip, Stack, Typography } from "@mui/material";
+
+export function NotificationCard({ notification }) {
+  return (
+    <Card variant="outlined">
+      <CardContent>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={1}
+        >
+          <Chip label={notification.Type} color="primary" size="small" />
+          <Typography variant="caption">
+            {notification.Timestamp}
+          </Typography>
+        </Stack>
+
+        <Typography variant="body1">
+          {notification.Message}
+        </Typography>
+      </CardContent>
+    </Card>
+  );
+}

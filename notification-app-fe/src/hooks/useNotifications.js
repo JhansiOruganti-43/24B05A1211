@@ -1,20 +1,45 @@
 import { useState, useEffect } from "react";
-import { fetchNotifications } from "../apis/notifications";
+import { fetchNotifications } from "../api/notifications";
 
 export function useNotifications() {
   const [notifications, setNotifications] = useState([]);
-  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const load = async () => {
-      const data = await fetchNotifications();
-      setNotifications(data.notifications ?? []);
-    };
+    async function load() {
+      try {
+        const data = await fetchNotifications();
+
+        const priority = {
+          Placement: 3,
+          Result: 2,
+          Event: 1,
+        };
+
+        const sorted = [...data].sort((a, b) => {
+          if (priority[b.Type] !== priority[a.Type]) {
+            return priority[b.Type] - priority[a.Type];
+          }
+
+          return new Date(b.Timestamp) - new Date(a.Timestamp);
+        });
+
+        setNotifications(sorted.slice(0, 10));
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
 
     load();
-  }, [notifications]);
+  }, []);
 
-  const totalPages = 0;
-
-  return { notifications, total, totalPages, loading: false, error: true };
+  return {
+    notifications,
+    totalPages: 1,
+    loading,
+    error,
+  };
 }
