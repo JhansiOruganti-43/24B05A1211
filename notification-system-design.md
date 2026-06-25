@@ -420,3 +420,80 @@ If the application grows further, I would use database read replicas to distribu
 ## Recommendation
 
 I would first implement pagination and proper indexing because they are simple to implement and provide immediate performance improvements. As the application scales, I would introduce Redis caching and read replicas to further improve performance and reduce database load.
+
+# Stage 5
+
+## Reliable Notification System
+
+### Shortcomings of the Current Implementation
+
+The current implementation processes notifications one student at a time. If sending an email fails for one student, the remaining students may not receive notifications. It is also slow because email sending, database saving, and push notifications are executed sequentially.
+
+---
+
+## What if email fails for 200 students?
+
+The application should not stop processing the remaining students. Failed email requests should be logged, and those students should be added to a retry queue so the emails can be sent again later.
+
+---
+
+## Should database save and email happen together?
+
+No.
+
+I would first save the notification in the database. After saving successfully, I would trigger email and push notifications asynchronously.
+
+This ensures that notifications are not lost even if the email service is temporarily unavailable.
+
+---
+
+## Proposed Solution
+
+1. Save notification in the database.
+2. Add email request to an email queue.
+3. Add push notification request to a push queue.
+4. Worker services process both queues independently.
+5. If any email fails, log the error and retry later.
+6. Continue processing the remaining students without interruption.
+
+---
+
+## Revised Pseudocode
+
+```text
+function notify_all(student_ids, message):
+
+    for each student_id in student_ids:
+
+        save_to_db(student_id, message)
+
+        add_to_email_queue(student_id, message)
+
+        add_to_push_queue(student_id, message)
+
+
+Email Worker:
+
+while email_queue is not empty:
+
+    send_email()
+
+    if failed:
+
+        log_error()
+
+        retry()
+
+
+Push Worker:
+
+while push_queue is not empty:
+
+    send_push_notification()
+```
+
+---
+
+## Recommendation
+
+I would first save notifications in the database and then process email and push notifications asynchronously using separate queues. This improves reliability, scalability, and ensures failures in one service do not stop the entire process.
