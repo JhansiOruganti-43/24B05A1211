@@ -526,3 +526,92 @@ As new notifications arrive, they are fetched from the API and sorted again base
 - Material UI
 - Fetch API
 - React Hooks (useState, useEffect)
+
+# Stage 7
+
+## Enhanced Notification User Interface
+
+### Objective
+
+Enhance the notification application by improving usability through filtering, pagination, and dynamic notification retrieval while maintaining a responsive Material UI interface.
+
+---
+
+## Features Implemented
+
+* Added support for API query parameters:
+
+  * `page`
+  * `limit`
+  * `notification_type`
+* Updated the notification API integration to fetch data dynamically.
+* Implemented notification filtering for:
+
+  * All
+  * Placement
+  * Result
+  * Event
+* Connected pagination with the backend API to retrieve notifications page by page.
+* Added loading indicators while notifications are being fetched.
+* Added error handling for failed API requests.
+* Continued displaying notifications sorted by priority and timestamp.
+* Improved React components using reusable hooks and component-based architecture.
+
+---
+
+## Technical Implementation
+
+### API Integration
+
+The notification API was updated to support pagination and filtering using query parameters.
+
+```text
+GET /evaluation-service/notifications?page=1&limit=10&notification_type=Placement
+```
+
+---
+
+### Filtering
+
+The application allows users to filter notifications by category:
+
+* All
+* Placement
+* Result
+* Event
+
+Selecting a filter automatically reloads the notification list from the API.
+
+---
+
+### Pagination
+
+Pagination is implemented using Material UI's Pagination component.
+
+When the user changes the page, the application requests only the required notifications instead of loading the complete dataset.
+
+---
+
+### Error Handling
+
+If the API request fails:
+
+* An error message is displayed.
+* Loading indicators are removed.
+* The application remains responsive without crashing.
+
+---
+
+## Technologies Used
+
+* React
+* Material UI
+* JavaScript (ES6)
+* Fetch API
+* React Hooks (`useState`, `useEffect`)
+
+---
+
+## Conclusion
+
+The enhanced notification interface now supports filtering, pagination, dynamic API integration, loading states, and error handling, providing a cleaner and more responsive user experience while improving scalability and maintainability.
