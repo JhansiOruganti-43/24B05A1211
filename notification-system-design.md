@@ -377,3 +377,46 @@ AND createdAt >= CURRENT_DATE - INTERVAL '7 days';
 ## Conclusion
 
 Using a composite index, selecting only required columns, and avoiding unnecessary indexes improves query performance and makes the notification system more scalable.
+
+
+# Stage 4
+
+## Performance Improvement
+
+The database is overloaded because notifications are fetched every time a student opens the page. As the number of users increases, the database receives many requests, which increases response time and affects user experience.
+
+### Solution 1: Pagination
+
+I would implement pagination and load only 10–20 notifications per request instead of loading all notifications. This reduces database load and improves response time.
+
+**Trade-off:** Users need to make another request to view additional notifications.
+
+---
+
+### Solution 2: Database Indexing
+
+I would create indexes on frequently queried columns such as `studentID`, `notificationType`, `isRead`, and `createdAt`. This improves filtering and sorting performance.
+
+**Trade-off:** Indexes require additional storage and slightly slow down insert and update operations.
+
+---
+
+### Solution 3: Caching
+
+I would use Redis caching for frequently accessed notifications. This reduces repeated database queries and improves response time.
+
+**Trade-off:** Cached data may become stale if it is not refreshed properly.
+
+---
+
+### Solution 4: Read Replicas
+
+If the application grows further, I would use database read replicas to distribute read requests while the primary database handles write operations.
+
+**Trade-off:** This increases infrastructure cost and may introduce a small replication delay.
+
+---
+
+## Recommendation
+
+I would first implement pagination and proper indexing because they are simple to implement and provide immediate performance improvements. As the application scales, I would introduce Redis caching and read replicas to further improve performance and reduce database load.
