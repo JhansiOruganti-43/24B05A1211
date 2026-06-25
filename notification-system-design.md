@@ -497,3 +497,32 @@ while push_queue is not empty:
 ## Recommendation
 
 I would first save notifications in the database and then process email and push notifications asynchronously using separate queues. This improves reliability, scalability, and ensures failures in one service do not stop the entire process.
+
+# Stage 6
+
+## Priority Notification Inbox
+
+### Approach
+
+The application fetches notifications from the protected Notification API using a Bearer access token.
+
+Each notification is assigned a priority based on its type:
+
+- Placement = High Priority
+- Result = Medium Priority
+- Event = Low Priority
+
+If two notifications have the same priority, the latest notification is displayed first based on its timestamp.
+
+The notifications are sorted by priority and timestamp, and only the top 10 notifications are displayed in the inbox.
+
+### Scalability
+
+As new notifications arrive, they are fetched from the API and sorted again based on priority and timestamp. Only the highest-priority 10 notifications are kept in the displayed list, ensuring the interface remains responsive even as the total number of notifications increases.
+
+### Technologies Used
+
+- React
+- Material UI
+- Fetch API
+- React Hooks (useState, useEffect)
