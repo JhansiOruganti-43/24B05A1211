@@ -1,15 +1,23 @@
 import { useState, useEffect } from "react";
 import { fetchNotifications } from "../api/notifications";
 
-export function useNotifications() {
-  const [notifications, setNotifications] = useState([]);
+export function useNotifications(
+  page = 1,
+  limit = 10,
+  notificationType = ""
+) {
+    const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function load() {
       try {
-        const data = await fetchNotifications();
+        const data = await fetchNotifications(
+  page,
+  limit,
+  notificationType
+);
 
         const priority = {
           Placement: 3,
@@ -34,8 +42,7 @@ export function useNotifications() {
     }
 
     load();
-  }, []);
-
+}, [page, limit, notificationType]);
   return {
     notifications,
     totalPages: 1,

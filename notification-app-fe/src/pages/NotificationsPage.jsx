@@ -16,19 +16,22 @@ import { NotificationFilter } from "../components/NotificationFilter";
 import { useNotifications } from "../hooks/useNotifications";
 
 export function NotificationsPage() {
-  const [filter, setFilter] = useState();
-  const [page, setPage] = useState("1");
-
-  const { notifications, totalPages, loading, error } = useNotifications();
-
+const [filter, setFilter] = useState("");
+const [page, setPage] = useState(1);
+const { notifications, totalPages, loading, error } = useNotifications(
+  page,
+  10,
+  filter
+);
 const unreadCount = notifications.length;
   const handleFilterChange = (newFilter) => {
-
-  };
+  setFilter(newFilter);
+  setPage(1);
+};
 
   const handlePageChange = (_, newPage) => {
-
-  };
+  setPage(newPage);
+};
 
   return (
     <Box sx={{ maxWidth: 720, mx: "auto", px: 2, py: 4 }}>
